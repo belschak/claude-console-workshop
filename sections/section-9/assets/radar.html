@@ -147,12 +147,27 @@ h1 { color: #fff; }
 .sys.ok { background: rgb(74 222 128 / .13); color: #4ade80; } .sys.hand { background: rgb(251 191 90 / .13); color: #fbbf5a; }
 .chat footer button { background: transparent; color: var(--ink); border-color: var(--line); }
 .chat header, .chat footer { border-color: var(--line); }
+
+/* ---- One product: switch between the Engine and the Radar ---- */
+.appnav { display: flex; gap: 4px; padding: 4px; border: 1px solid #252957; border-radius: 10px; background: rgb(255 255 255 / .03); }
+.appnav a { padding: 6px 12px; border-radius: 7px; color: #9ba4c0; font-weight: 600; font-size: 13.5px; text-decoration: none; white-space: nowrap; transition: background-color .15s, color .15s; }
+.appnav a:hover { color: #fff; background: rgb(255 255 255 / .06); }
+.appnav a[aria-current="page"] { color: #fff; background: linear-gradient(135deg, #3b9eff, #2b7de0); box-shadow: 0 4px 14px -4px rgb(59 158 255 / .7); }
+
+.appbar { display: flex; align-items: center; gap: 18px; padding: 10px 22px; border-bottom: 1px solid #252957; background: rgb(10 11 34 / .7); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 20; }
+.appbar .brand { color: #fff; font-weight: 800; font-size: 21px; letter-spacing: .01em; text-decoration: none; padding-right: 18px; border-right: 1px solid #252957; }
+.appbar .brand span { color: #3b9eff; }
+html { background: #0a0b22; } body { min-height: 100vh; background-attachment: fixed !important; }
 </style>
 </head>
 <body>
+<header class="appbar">
+  <a class="brand" href="/" title="Back to the product page">FRANK<span>.</span></a>
+  <nav class="appnav" aria-label="App"><a href="/demo">Expansion Engine</a><a href="/radar" aria-current="page">Radar</a></nav>
+</header>
 <div class="wrap">
   <div class="head">
-    <div><h1>FRANK Radar</h1><div class="sub">Where FRANK's clients are today and where it goes next · synthetic client base, real UK register counts</div></div>
+    <div><h1>Radar</h1><div class="sub">Where FRANK's clients are today and where it goes next · synthetic client base, real UK register counts</div></div>
     <div class="controls">
       <div class="seg" id="views"><span>View</span><button data-v="world" class="on">World</button><button data-v="europe">Europe</button><button data-v="pt">Portugal</button><button data-v="uk">UK</button></div>
       <button class="ai" id="aitop">✦ AI account manager</button>

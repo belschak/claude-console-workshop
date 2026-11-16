@@ -1,5 +1,6 @@
 {
   "buildCommand": "node build.js",
   "outputDirectory": "dist",
-  "installCommand": "echo no install needed"
+  "installCommand": "echo no install needed",
+  "trailingSlash": false
 }
