@@ -315,6 +315,26 @@ a { color: #8cc8ff; }
 .appnav a:hover { color: #fff; background: rgb(255 255 255 / .06); }
 .appnav a[aria-current="page"] { color: #fff; background: linear-gradient(135deg, #3b9eff, #2b7de0); box-shadow: 0 4px 14px -4px rgb(59 158 255 / .7); }
 html { background: #0a0b22; } body { min-height: 100vh; background-attachment: fixed !important; }
+
+/* ---- Guide bar: the four steps of the demo, always one click away ---- */
+.guide { display: flex; align-items: center; gap: 14px; margin: 14px 20px 0; padding: 10px 12px 10px 16px; border: 1px solid #252957; border-radius: 12px; background: linear-gradient(90deg, rgb(59 158 255 / .12), rgb(52 214 255 / .04)); }
+.guide-hint { flex: 1; min-width: 0; color: #e9ecf7; font-size: 14px; }
+.guide-hint b { color: #fff; }
+.guide-steps { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.guide-steps button { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px 0 6px; border: 1px solid #252957; border-radius: 999px; background: rgb(255 255 255 / .03); color: #9ba4c0; font-weight: 600; font-size: 13px; white-space: nowrap; transition: background-color .15s, color .15s, border-color .15s, box-shadow .2s; }
+.guide-steps button:hover { color: #fff; border-color: #3a3f7a; }
+.guide-steps i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #252957; color: #fff; font-style: normal; font-size: 12px; }
+.guide-steps .done { color: #e9ecf7; }
+.guide-steps .done i { background: #4ade80; color: #0a0b22; }
+.guide-steps .now { color: #fff; border-color: #3b9eff; box-shadow: 0 0 0 3px rgb(59 158 255 / .2); }
+.guide-steps .now i { background: #3b9eff; }
+.guide-close { border: 0; background: none; color: #9ba4c0; font-size: 20px; line-height: 1; padding: 4px 6px; }
+.guide-close:hover { color: #fff; }
+.guide-open { display: none; }
+.guide-hidden .guide { display: none; }
+.guide-hidden .guide-open { display: inline-flex; }
+.stage { cursor: help; }
+@media (max-width: 1100px) { .guide { flex-wrap: wrap; } .guide-steps { flex-wrap: wrap; } }
 </style>
 </head>
 <body>
@@ -326,6 +346,7 @@ html { background: #0a0b22; } body { min-height: 100vh; background-attachment: f
     <p>150 paying clients, generated to match FRANK's brief. Client replies are simulated live.</p>
   </div>
   <div class="actions">
+    <button class="ghost guide-open" id="guideOpen">How it works</button>
     <span class="pill amber">synthetic data</span>
     <button id="skip" class="ghost">Show results</button>
     <button id="run" class="primary">Run the engine</button>
@@ -518,9 +539,9 @@ const shown = {};
 const STAGES = [
   { k: "clients", who: "Usage Radar", v: () => fmt(shown.clients), what: () => "accounts scored this week" },
   { k: "signals", who: "Signals", v: () => fmt(shown.signals), what: () => `signals in ${S.clients_with_signal} accounts · ${fmt(S.captured)} requests seen but done by hand` },
-  { k: "potential", who: "Sizer", v: () => keur(shown.potential), what: () => `expansion potential a year · ${keur(S.at_risk)} at risk` },
+  { k: "potential", who: "Euro value", v: () => keur(shown.potential), what: () => `expansion potential a year · ${keur(S.at_risk)} at risk` },
   { k: "reports", who: "Value reports", v: () => fmt(shown.reports), what: () => "monthly reports drafted, one next step each" },
-  { k: "auto_clients", who: "Router", v: () => fmt(shown.auto_clients), what: () => `zero-touch plays · ${S.human_clients} prepared for a person` },
+  { k: "auto_clients", who: "Who acts", v: () => fmt(shown.auto_clients), what: () => `zero-touch plays · ${S.human_clients} prepared for a person` },
   { k: "answered", who: "Nudges", sim: true, v: () => fmt(live().answered), what: () => "client answers" },
   { k: "trials", who: "Trials", sim: true, v: () => fmt(live().trials), what: () => `14-day trials started${live().wins ? ` · adoption wins: ${live().wins}` : ""}` },
   { k: "signed", who: "Signed", sim: true, v: () => keur(live().signed), what: () => `a year, zero-touch${live().pipeline ? ` · ${keur(live().pipeline)} sent by the lead` : ""}` },
@@ -831,6 +852,91 @@ $("#skip").onclick = () => { if (!running) { logLines = []; finish(); } };
   renderFunnel(); renderLeft();
 })();
 
+</script>
+
+<script>
+/* Guide bar: shows the next step of the demo and does it on click. Reads the app's own DOM, changes no engine logic. */
+(() => {
+  const steps = [
+    { label: "Run the engine", hint: "<b>Step 1.</b> Press <b>Run the engine</b>. It scores all 150 clients and finds where each one is ready to grow." },
+    { label: "Pick an account", hint: "<b>Step 2.</b> Click any account in the list to see its usage, its signals and what it is worth." },
+    { label: "Play the client", hint: "<b>Step 3.</b> Open <b>tab 3</b>. You play the client: answer FRANK's message and accept the trial." },
+    { label: "See it signed", hint: "<b>Step 4.</b> Reply to the nudge until the upgrade is signed. Watch <b>Signed</b> in the top row fill up." },
+  ];
+  const bar = document.createElement("div");
+  bar.className = "guide";
+  bar.setAttribute("role", "region");
+  bar.setAttribute("aria-label", "How to use the demo");
+  bar.innerHTML = `<p class="guide-hint" aria-live="polite"></p>
+    <ol class="guide-steps">${steps.map((s, i) => `<li><button type="button" data-step="${i}"><i>${i + 1}</i>${s.label}</button></li>`).join("")}</ol>
+    <button class="guide-close" type="button" aria-label="Hide the guide">×</button>`;
+  document.querySelector("header.top").after(bar);
+
+  let picked = false, played = false;
+  document.addEventListener("click", e => {
+    if (e.isTrusted && e.target.closest("tr.row")) picked = true;
+    if (e.target.closest('#dtabs button[data-t="play"]')) played = true;
+  }, true);
+
+  const ran = () => !!document.querySelector("#lbody tr.row");
+  const signed = () => [...document.querySelectorAll("#funnel .stage")].some(st => /Signed/.test(st.textContent) && /[1-9]/.test(st.querySelector(".n")?.textContent || ""));
+  const state = () => [ran(), ran() && picked, ran() && played, signed()];
+
+  function render() {
+    const done = state();
+    const now = done.findIndex(d => !d);
+    // Write only what changed, so the page observer below never loops
+    const key = done.join() + now;
+    if (bar.dataset.key === key) return;
+    bar.dataset.key = key;
+    bar.querySelector(".guide-hint").innerHTML = now === -1
+      ? "<b>Done.</b> That upgrade went from a usage signal to a signature with nobody at FRANK involved. Pick another account, or open the <b>Radar</b>."
+      : steps[now].hint;
+    bar.querySelectorAll(".guide-steps button").forEach((b, i) => {
+      b.classList.toggle("done", done[i]);
+      b.classList.toggle("now", i === now);
+      b.querySelector("i").textContent = done[i] ? "✓" : i + 1;
+    });
+  }
+
+  bar.addEventListener("click", e => {
+    if (e.target.closest(".guide-close")) { document.body.classList.add("guide-hidden"); return; }
+    const b = e.target.closest("[data-step]");
+    if (!b) return;
+    const n = +b.dataset.step;
+    if (n === 0 || !ran()) { document.getElementById("skip")?.click(); return; }
+    if (n === 1) { const rows = [...document.querySelectorAll("#lbody tr.row")];
+      // Pick a zero-touch agency: its tab 3 is the live client conversation
+      const r = rows.find(x => /Zero-touch/.test(x.textContent)) || rows[0]; picked = true; r?.click(); r?.scrollIntoView({ block: "nearest" }); }
+    if (n >= 2) { played = true; document.querySelector('#dtabs button[data-t="play"]')?.click(); }
+    render();
+  });
+  document.getElementById("guideOpen")?.addEventListener("click", () => document.body.classList.remove("guide-hidden"));
+
+  // Plain-language explanation on every pipeline stage
+  const explain = {
+    "Usage Radar": "Scores every client on how they use FRANK, against agencies on the same plan.",
+    "Signals": "Moments a client is ready to grow: a plan limit reached, a flow left off, users gone quiet.",
+    "Euro value": "What each signal is worth a year, and how much revenue is at risk.",
+    "Value reports": "A monthly report per client: hours saved, what that time is worth, one next step.",
+    "Who acts": "Small agencies get an automatic nudge. Large brokers get a prepared plan for a person.",
+    "Nudges": "Simulated: how many clients answered FRANK's message.",
+    "Trials": "Simulated: one-tap 14-day trials started.",
+    "Signed": "Simulated: upgrades signed with nobody at FRANK involved.",
+  };
+  const label = () => document.querySelectorAll("#funnel .stage").forEach(st => {
+    const k = Object.keys(explain).find(k => (st.querySelector(".who")?.textContent || "").includes(k));
+    if (k && st.title !== explain[k]) st.title = explain[k];
+  });
+
+  let queued = false;
+  new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; render(); label(); });
+  }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  render(); label();
+})();
 </script>
 </body>
 </html>
