@@ -236,6 +236,65 @@ a.index-title:hover {
 }
 
 
+/* ---------- Pitch hero additions ---------- */
+.wordmark .dot { color: var(--blue-light); }
+.hero-eyebrow {
+  margin: 0 0 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+}
+.hero h1 { max-width: 15ch; }
+.hero h1 .hl {
+  background: linear-gradient(90deg, #7cc0f2, #3aa0ec);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-lead { max-width: 60ch; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.cta {
+  display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.4rem;
+  border-radius: 999px; font-weight: 700; text-decoration: none;
+  transition: transform 0.12s, background 0.2s, border-color 0.2s;
+}
+.hero .cta-primary { background: var(--blue); color: #fff; }
+.hero .cta-primary:hover { background: #2a96e6; }
+.hero .cta-ghost { border: 1px solid rgb(255 255 255 / 0.35); color: #fff; }
+.hero .cta-ghost:hover { background: rgb(255 255 255 / 0.08); }
+.cta:active { transform: translateY(1px); }
+.kpis {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+  margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+  background: rgb(255 255 255 / 0.14);
+  border: 1px solid rgb(255 255 255 / 0.14); border-radius: 14px; overflow: hidden;
+}
+.kpi { background: var(--navy); padding: 1.4rem 1.5rem 1.5rem; }
+.kpi dt {
+  font-size: clamp(2rem, 3.6vw, 3rem); font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1;
+}
+.kpi dd { margin: 0.6rem 0 0; color: rgb(255 255 255 / 0.72); font-size: 0.98rem; line-height: 1.4; }
+.kpi-note { margin: 0.9rem 0 0; font-size: 0.85rem; color: rgb(255 255 255 / 0.5); }
+.flow {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem;
+  max-width: 1400px; margin: 0 auto clamp(2.5rem, 5vw, 3.5rem); padding: 0; list-style: none;
+}
+.flow li {
+  position: relative; padding: 1.1rem 1.2rem 1.25rem;
+  background: var(--navy-2); border-radius: 12px; color: rgb(255 255 255 / 0.75); font-size: 0.98rem; line-height: 1.45;
+}
+.flow li span { display: block; font-size: 0.8rem; font-weight: 700; color: var(--blue-light); letter-spacing: 0.1em; }
+.flow li b { display: block; margin: 0.2rem 0 0.35rem; color: #fff; font-size: 1.3rem; letter-spacing: -0.01em; }
+.flow li:not(:last-child)::after {
+  content: "→"; position: absolute; right: -0.85rem; top: 50%; transform: translateY(-50%);
+  color: var(--blue-light); font-weight: 700; z-index: 1;
+}
+/* Presenting: hide the "add your section" row, the template stays on GitHub */
+.index-row.is-add { display: none; }
+
 /* ---------- Footer ---------- */
 .site-footer {
   display: flex;
@@ -253,7 +312,12 @@ a.index-title:hover {
 }
 
 /* ---------- Small screens ---------- */
+@media (max-width: 960px) {
+  .kpis, .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flow li:nth-child(2)::after { display: none; }
+}
 @media (max-width: 760px) {
+  .flow li::after { display: none; }
   .index-row {
     grid-template-columns: 2.75rem 1fr;
   }
@@ -286,4 +350,7 @@ a.index-title:hover {
   .hero-link {
     transition: none;
   }
+}
+@media (max-width: 480px) {
+  .kpis, .flow { grid-template-columns: 1fr; }
 }
